@@ -26,7 +26,7 @@ export async function createUser(req, res) {
 }
 
 export async function editUser(req, res) {
-    const { idDoUsuario, novaSenha } = req.body
+    const { idDoUsuario, novoNome, novoEmail, novaSenha } = req.body
 
     const { data, error } = await supabase
         .from('usuarios')
@@ -46,7 +46,7 @@ export async function editUser(req, res) {
 }
 
 export async function deleteUser(req, res) {
-    const { idDoUsuario } = req.body    
+    const { idDoUsuario } = req.body
 
     const { data, error } = await supabase
         .from('usuarios')
