@@ -38,13 +38,20 @@ export async function validateEdit(req, res, next) {
 
     const { data } = await supabase
         .from('usuarios')
-        .select('id')
-        .eq('email', novoEmail)
+        .select('email')
+        .eq('id', idDoUsuario)
 
-    if (data && data.length > 0 && data[0].id !== idDoUsuario) {
-        return res.status(409).json({ erro: 'Email já cadastrado' })
+    if (data[0].email !== novoEmail) {
+        const { data } = await supabase
+            .from('usuarios')
+            .select('id')
+            .eq('email', novoEmail)
+            .limit(1)
+
+        if (data && data.length > 0) {
+            return res.status(409).json({ erro: 'Email já cadastrado' })
+        }
     }
-
     next()
 }
 
