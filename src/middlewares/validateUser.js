@@ -25,31 +25,27 @@ export async function validateNewUser(req, res, next) {
     next()
 }
 
-export async function validateEditNome(req, res, next) {
-    const { idDoUsuario, novoNome } = req.body
-    if (!idDoUsuario || !novoNome) {
-        return res.status(400).json({ erro: 'O idDoUsuario e novoNome são obrigatórios!' })
+export async function validateEdit(req, res, next) {
+    const { idDoUsuario, novoNome, novoEmail, novaSenha } = req.body
+    if (!idDoUsuario || !novoNome || !novoEmail || !novaSenha) {
+        return res.status(400).json({ erro: 'O idDoUsuario, novoNome, novoEmail e novaSenha são obrigatórios!' })
     }
-    next()
-}
 
-export async function validateEditEmail(req, res, next) {
-    const { idDoUsuario, novoEmail } = req.body
-    if (!idDoUsuario || !novoEmail) {
-        return res.status(400).json({ erro: 'O idDoUsuario e novoEmail são obrigatórios!' })
-    }
     const regexEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!regexEmail.test(novoEmail)) {
         return res.status(400).json({ erro: 'Email inválido' })
     }
-    next()
-}
 
-export async function validateEditSenha(req, res, next) {
-    const { idDoUsuario, novaSenha } = req.body
-    if (!idDoUsuario || !novaSenha) {
-        return res.status(400).json({ erro: 'O idDoUsuario e novaSenha são obrigatórios!' })
+    const { data } = await supabase
+        .from('usuarios')
+        .select('id')
+        .eq('email', novoEmail)
+        .limit(2)
+
+    if (data && data.length > 1) {
+        return res.status(409).json({ erro: 'Email já cadastrado' })
     }
+
     next()
 }
 
