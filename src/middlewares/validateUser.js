@@ -40,9 +40,8 @@ export async function validateEdit(req, res, next) {
         .from('usuarios')
         .select('id')
         .eq('email', novoEmail)
-        .limit(2)
 
-    if (data && data.length > 1) {
+    if (data && data.length > 0 && data[0].id !== idDoUsuario) {
         return res.status(409).json({ erro: 'Email já cadastrado' })
     }
 

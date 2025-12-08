@@ -30,9 +30,11 @@ export async function editUser(req, res) {
 
     const { data, error } = await supabase
         .from('usuarios')
-        .update({ nome: novoNome })
-        .update({ email: novoEmail })
-        .update({ senha: novaSenha })
+        .update({
+            nome: novoNome,
+            email: novoEmail,
+            senha: novaSenha
+        })
         .eq('id', idDoUsuario)
         .select()
 
