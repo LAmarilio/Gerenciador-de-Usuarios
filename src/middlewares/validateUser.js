@@ -27,6 +27,7 @@ export async function validateNewUser(req, res, next) {
 
 export async function validateEdit(req, res, next) {
     const { idDoUsuario, novoNome, novoEmail, novaSenha } = req.body
+
     if (!idDoUsuario || !novoNome || !novoEmail || !novaSenha) {
         return res.status(400).json({ erro: 'O idDoUsuario, novoNome, novoEmail e novaSenha são obrigatórios!' })
     }
@@ -36,22 +37,29 @@ export async function validateEdit(req, res, next) {
         return res.status(400).json({ erro: 'Email inválido' })
     }
 
-    const { data } = await supabase
+    // Busca usuário atual
+    const { data: usuarioAtual } = await supabase
         .from('usuarios')
         .select('email')
         .eq('id', idDoUsuario)
+        .limit(1)
 
-    if (data[0].email !== novoEmail) {
-        const { data } = await supabase
+    if (!usuarioAtual || usuarioAtual.length === 0) {
+        return res.status(404).json({ erro: 'Usuário não encontrado' })
+    }
+
+    // Só valida duplicidade se email foi alterado
+    if (usuarioAtual[0].email !== novoEmail) {
+        const { data: usuariosComEmail } = await supabase
             .from('usuarios')
             .select('id')
             .eq('email', novoEmail)
-            .limit(1)
 
-        if (data && data.length > 0) {
+        if (usuariosComEmail && usuariosComEmail.length > 0) {
             return res.status(409).json({ erro: 'Email já cadastrado' })
         }
     }
+
     next()
 }
 
