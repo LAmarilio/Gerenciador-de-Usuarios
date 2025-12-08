@@ -37,7 +37,6 @@ export async function validateEdit(req, res, next) {
         return res.status(400).json({ erro: 'Email inválido' })
     }
 
-    // Busca usuário atual
     const { data: usuarioAtual } = await supabase
         .from('usuarios')
         .select('email')
@@ -48,7 +47,6 @@ export async function validateEdit(req, res, next) {
         return res.status(404).json({ erro: 'Usuário não encontrado' })
     }
 
-    // Só valida duplicidade se email foi alterado
     if (usuarioAtual[0].email !== novoEmail) {
         const { data: usuariosComEmail } = await supabase
             .from('usuarios')
@@ -59,7 +57,6 @@ export async function validateEdit(req, res, next) {
             return res.status(409).json({ erro: 'Email já cadastrado' })
         }
     }
-
     next()
 }
 
